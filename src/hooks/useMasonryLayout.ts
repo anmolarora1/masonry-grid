@@ -26,6 +26,7 @@ export const useMasonryLayout = <T extends Item>(
   const itemsLengthRef = useRef(0);
   const columnsRef = useRef(0);
   const columnHeightsRef = useRef<number[]>([]);
+  const itemsRef = useRef<T[]>([]);
 
   // Calculate positions, preserving previous calculations
   const positions = useMemo(() => {
@@ -38,8 +39,9 @@ export const useMasonryLayout = <T extends Item>(
       Math.floor((containerWidth - gap) / (itemWidth + gap))
     );
 
-    // Reset layout if conditions changed
+    // Reset layout if conditions changed or items array changed
     const shouldResetLayout =
+      items !== itemsRef.current ||
       items.length < itemsLengthRef.current ||
       numColumns !== columnsRef.current;
 
@@ -48,6 +50,7 @@ export const useMasonryLayout = <T extends Item>(
       itemsLengthRef.current = 0;
       columnsRef.current = numColumns;
       columnHeightsRef.current = new Array(numColumns).fill(0);
+      itemsRef.current = items;
     }
 
     // Initialize or get column heights
@@ -93,6 +96,7 @@ export const useMasonryLayout = <T extends Item>(
     itemsLengthRef.current = items.length;
     columnsRef.current = numColumns;
     columnHeightsRef.current = columnHeights;
+    itemsRef.current = items;
 
     return itemPositions;
   }, [items, containerWidth, itemWidth, gap]);

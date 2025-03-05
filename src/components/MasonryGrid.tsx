@@ -1,4 +1,10 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 import { Photo } from '../types';
 import { useMasonryLayout } from '../hooks/useMasonryLayout';
 import { usePhotos } from '../hooks/usePhotos';
@@ -29,12 +35,24 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
   const [scrollTop, setScrollTop] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
   const searchQuery = searchParams.get('q') || '';
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
   const { photos, loading, page, hasMore, setPage } = usePhotos(searchQuery);
   const containerDimensions = useContainerDimensions(containerRef);
+
+  // Reset scroll position when search query changes
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+      setScrollTop(0);
+    }
+  }, [searchQuery]);
 
   // Calculate number of columns based on container width
   const containerWidth = containerDimensions.width || window.innerWidth - 32;
@@ -53,7 +71,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
     itemWidth: columnWidth,
     gap: GAP,
   };
-
   const { positions, visibleItems, totalHeight } = useMasonryLayout<Photo>(
     photos,
     config,
@@ -61,21 +78,35 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
     containerDimensions.height
   );
 
+  // Handle URL changes for photo modal
+  useEffect(() => {
+    const photoId = searchParams.get('photo');
+    if (photoId) {
+      const photo = photos.find((p) => p.id.toString() === photoId);
+      if (photo) {
+        setSelectedPhoto(photo);
+      }
+    } else {
+      setSelectedPhoto(null);
+    }
+  }, [searchParams, photos]);
+
   const handlePhotoClick = useCallback(
     (photo: Photo) => {
       setSelectedPhoto(photo);
-      navigate(`/photo/${photo.id}`, {
-        state: { photo },
-        replace: true,
-      });
+      const params = new URLSearchParams(searchParams);
+      params.set('photo', photo.id.toString());
+      navigate(`?${params.toString()}`, { replace: true });
     },
-    [navigate]
+    [navigate, searchParams]
   );
 
   const handleCloseModal = useCallback(() => {
     setSelectedPhoto(null);
-    navigate('/', { replace: true });
-  }, [navigate]);
+    const params = new URLSearchParams(searchParams);
+    params.delete('photo');
+    navigate(`?${params.toString()}`, { replace: true });
+  }, [navigate, searchParams]);
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {

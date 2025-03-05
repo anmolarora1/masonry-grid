@@ -1,29 +1,35 @@
 import styled from 'styled-components';
 
 export const AppContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
   min-height: 100vh;
-  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const SearchContainer = styled.div`
-  padding: 1rem;
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  flex-shrink: 0;
+`;
+
+export const MainContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const SearchInput = styled.input`
   width: 100%;
-  max-width: 400px;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
 
   &:focus {
-    outline: none;
     border-color: #0066cc;
   }
 `;

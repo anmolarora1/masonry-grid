@@ -7,44 +7,14 @@ import {
   useNavigate,
   useLocation,
 } from 'react-router-dom';
-import styled from 'styled-components';
 import debounce from 'lodash/debounce';
 import { MasonryGrid } from './components/MasonryGrid';
-import { PhotoDetailRoute } from './components/PhotoDetailRoute';
-
-const AppContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SearchContainer = styled.div`
-  margin-bottom: 2rem;
-  flex-shrink: 0;
-`;
-
-const MainContent = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.2s;
-
-  &:focus {
-    border-color: #0066cc;
-  }
-`;
+import {
+  AppContainer,
+  SearchContainer,
+  MainContent,
+  SearchInput,
+} from './components/App.styles';
 
 function Layout() {
   const location = useLocation();
@@ -107,10 +77,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <MasonryGrid />,
-      },
-      {
-        path: 'photo/:id',
-        element: <PhotoDetailRoute />,
       },
     ],
   },
