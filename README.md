@@ -1,46 +1,142 @@
-# Getting Started with Create React App
+# Virtualized Masonry Grid Photo Gallery
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A high-performance React application showcasing a virtualized masonry grid layout with photos from the Pexels API. This project demonstrates advanced React concepts, TypeScript implementation, and performance optimization techniques.
+
+## Features
+
+- Responsive masonry grid layout with virtualization
+- Custom-built virtualization without external libraries
+- Photo detail view with comprehensive information
+- Real-time search functionality
+- Infinite scrolling
+- Fully typed with TypeScript
+- Optimized performance with React hooks
+- Responsive design for all devices
+
+## Technical Implementation
+
+### Performance Optimizations
+
+1. **Virtualization**: Only renders visible grid items using a custom virtualization hook
+2. **Lazy Loading**: Images are loaded lazily as they come into view
+3. **Debounced Search**: Search requests are debounced to prevent excessive API calls
+4. **Memoization**: Uses `useMemo` and `useCallback` for expensive calculations
+5. **Efficient Rendering**: Minimizes re-renders using proper React patterns
+
+### Web Vitals Performance
+
+Current metrics:
+
+- First Contentful Paint: 0.2s
+- Largest Contentful Paint: 1.2s
+- Total Blocking Time: 10ms
+- Cumulative Layout Shift: 0
+- Speed Index: 0.3s
+
+Steps to further improve performance:
+
+1. Implement image preloading for visible items
+2. Add progressive image loading
+3. Optimize bundle size with code splitting
+4. Implement service worker for caching
+5. Add performance monitoring
+
+### Key Components
+
+- `MasonryGrid`: Main component implementing the virtualized grid
+- `PhotoDetail`: Detailed view of individual photos
+- `useMasonryLayout`: Custom hook for calculating masonry layout positions
+- `PexelsService`: API service layer for Pexels integration
+
+## Setup Instructions
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file in the root directory and add your Pexels API key:
+
+   ```
+   REACT_APP_PEXELS_API_KEY=your_api_key_here
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+## Environment Requirements
+
+- Node.js 14.0 or higher
+- npm 6.0 or higher
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start`: Runs the app in development mode
+- `npm run build`: Builds the app for production
+- `npm run eject`: Ejects from create-react-app
 
-### `npm start`
+## Design Decisions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Virtualization Strategy
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The virtualization implementation uses a custom hook that calculates item positions based on the container dimensions and scroll position. This approach provides smooth scrolling while maintaining performance with large datasets.
 
-### `npm test`
+### State Management
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The application uses React's built-in state management with hooks, avoiding external state management libraries to keep the bundle size minimal.
 
-### `npm run build`
+### Styling
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Styled-components is used for styling to maintain component-scoped CSS and dynamic styling capabilities while ensuring good performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Error Handling
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The application currently handles API errors through try/catch blocks in the service layer, but does not yet implement React Error Boundaries. This is an area for improvement that should be addressed in future updates to make the application more robust.
 
-### `npm run eject`
+Key areas needing error boundary implementation:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Main application container
+- Photo grid component
+- Individual photo components
+- API request handling
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Future Improvements
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Here are some things I'd love to add if I had more time:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. **Better Testing**
 
-## Learn More
+   - Add some unit tests to catch regressions
+   - Set up E2E tests to ensure critical paths work
+   - Add performance testing to catch performance regressions
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. **Performance Enhancements**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   - Add server-side rendering for better SEO
+   - Implement image preloading for smoother transitions
+   - Add progressive image loading (blur-up technique)
+   - Set up performance monitoring to track real user metrics
+
+3. **New Features**
+
+   - Add photo categories and tags for better organization
+   - Let users save their favorite photos
+   - Add social sharing buttons
+   - Support different view modes (grid/list)
+   - Add scroll position restoration when navigating back from photo detail
+
+4. **Developer Experience**
+
+   - Improve type safety and error handling
+   - Add better documentation for the codebase
+   - Set up proper logging for debugging
+   - Add performance monitoring tools
+
+5. **UX Improvements**
+   - Add loading skeletons for better perceived performance
+   - Implement smooth transitions between views
+   - Add keyboard navigation support
+   - Improve mobile experience with touch gestures
