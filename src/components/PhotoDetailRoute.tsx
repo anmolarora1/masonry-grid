@@ -1,19 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Photo } from '../types';
-import { PhotoDetail } from './PhotoDetail';
+import { PhotoModal } from './PhotoModal';
 import { pexelsService } from '../services/pexelsApi';
+import { OverlayContainer, ErrorMessage } from './PhotoDetailRoute.styles';
 
 export const PhotoDetailRoute: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const searchParams = new URLSearchParams(location.search);
+  const photoId = searchParams.get('photo');
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (photoId) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [photoId]);
 
   useEffect(() => {
     const fetchPhoto = async () => {
-      if (!id) return;
+      if (!photoId) return;
 
       // First try to get photo from router state
       const statePhoto = location.state?.photo as Photo | undefined;
@@ -24,34 +38,67 @@ export const PhotoDetailRoute: React.FC = () => {
 
       // If not in state, fetch from API
       setLoading(true);
+      setError(null);
       try {
-        const fetchedPhoto = await pexelsService.getPhoto(id);
+        const fetchedPhoto = await pexelsService.getPhoto(photoId);
         setPhoto(fetchedPhoto);
       } catch (error) {
         console.error('Error fetching photo:', error);
+        setError('Failed to load photo. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchPhoto();
-  }, [id, location.state]);
+  }, [photoId, location.state]);
 
-  const handleBack = () => {
-    navigate('/', { replace: true });
+  const handleClose = () => {
+    const params = new URLSearchParams(location.search);
+    params.delete('photo');
+    navigate(`/?${params.toString()}`, { replace: true });
   };
 
-  if (!id) {
-    return <div>No photo ID provided</div>;
+  if (!photoId) {
+    return null;
   }
 
   if (loading) {
-    return <div>Loading photo...</div>;
+    return (
+      <OverlayContainer>
+        <ErrorMessage>Loading photo...</ErrorMessage>
+      </OverlayContainer>
+    );
   }
 
-  if (!photo) {
-    return <div>Photo not found</div>;
+  if (error || !photo) {
+    return (
+      <OverlayContainer>
+        <ErrorMessage>
+          {error || 'Photo not found'}
+          <br />
+          <button
+            onClick={handleClose}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              border: 'none',
+              borderRadius: '4px',
+              background: '#0066cc',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            Close
+          </button>
+        </ErrorMessage>
+      </OverlayContainer>
+    );
   }
 
-  return <PhotoDetail photo={photo} onBack={handleBack} />;
+  return (
+    <OverlayContainer>
+      <PhotoModal photo={photo} onClose={handleClose} />
+    </OverlayContainer>
+  );
 };

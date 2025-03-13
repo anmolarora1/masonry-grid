@@ -15,28 +15,17 @@ export const useContainerDimensions = (
 
   useEffect(() => {
     if (!ref?.current) return;
-
-    // Log initial dimensions
-    console.log('Initial container dimensions:', {
-      width: ref.current.offsetWidth,
-      height: ref.current.offsetHeight,
-    });
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      if (entries[0]) {
-        const { width, height } = entries[0].contentRect;
-        // Only update if we have valid dimensions
-        if (width > 0 && height > 0) {
-          console.log('Resize observer fired:', { width, height });
-          setDimensions({ width, height });
-        } else {
-          // If we get zero dimensions, use the previous valid dimensions
-          console.log(
-            'Ignoring zero dimensions, keeping previous:',
-            dimensions
-          );
-        }
+    const updateDimensions = () => {
+      console.log('updateDimensions');
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        setDimensions({ width: rect.width, height: rect.height });
       }
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateDimensions();
     });
 
     resizeObserver.observe(ref.current);

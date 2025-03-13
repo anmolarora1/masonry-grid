@@ -10,7 +10,6 @@ import { useMasonryLayout } from '../hooks/useMasonryLayout';
 import { usePhotos } from '../hooks/usePhotos';
 import { useContainerDimensions } from '../hooks/useContainerDimensions';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { PhotoModal } from './PhotoModal';
 import {
   GridContainer,
   GridItem,
@@ -41,7 +40,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
     [location.search]
   );
   const searchQuery = searchParams.get('q') || '';
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
   const { photos, loading, page, hasMore, setPage } = usePhotos(searchQuery);
   const containerDimensions = useContainerDimensions(containerRef);
@@ -78,35 +76,14 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
     containerDimensions.height
   );
 
-  // Handle URL changes for photo modal
-  useEffect(() => {
-    const photoId = searchParams.get('photo');
-    if (photoId) {
-      const photo = photos.find((p) => p.id.toString() === photoId);
-      if (photo) {
-        setSelectedPhoto(photo);
-      }
-    } else {
-      setSelectedPhoto(null);
-    }
-  }, [searchParams, photos]);
-
   const handlePhotoClick = useCallback(
     (photo: Photo) => {
-      setSelectedPhoto(photo);
       const params = new URLSearchParams(searchParams);
       params.set('photo', photo.id.toString());
-      navigate(`?${params.toString()}`, { replace: true });
+      navigate(`/?${params.toString()}`, { replace: true });
     },
     [navigate, searchParams]
   );
-
-  const handleCloseModal = useCallback(() => {
-    setSelectedPhoto(null);
-    const params = new URLSearchParams(searchParams);
-    params.delete('photo');
-    navigate(`?${params.toString()}`, { replace: true });
-  }, [navigate, searchParams]);
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
@@ -137,43 +114,38 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
   }
 
   return (
-    <>
-      <GridContainer
-        ref={containerRef}
-        onScroll={handleScroll}
-        className={className}
-        style={style}
-      >
-        <div style={{ height: totalHeight, position: 'relative' }}>
-          {visibleItems.map((index) => {
-            const photo = photos[index];
-            const position = positions[index];
+    <GridContainer
+      ref={containerRef}
+      onScroll={handleScroll}
+      className={className}
+      style={style}
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        {visibleItems.map((index) => {
+          const photo = photos[index];
+          const position = positions[index];
 
-            if (!photo || !position) return null;
+          if (!photo || !position) return null;
 
-            return (
-              <GridItem
-                key={photo.id}
-                $pos={position}
-                onClick={() => handlePhotoClick(photo)}
-              >
-                <Image
-                  src={photo.src.medium}
-                  alt={photo.alt || 'Photo'}
-                  loading='lazy'
-                />
-              </GridItem>
-            );
-          })}
-        </div>
-        {loading && <LoadingContainer>Loading more photos...</LoadingContainer>}
-        {!loading && !hasMore && photos.length > 0 && (
-          <LoadingContainer>No more photos to load</LoadingContainer>
-        )}
-      </GridContainer>
-      {selectedPhoto && (
-        <PhotoModal photo={selectedPhoto} onClose={handleCloseModal} />
+          return (
+            <GridItem
+              key={photo.id}
+              $pos={position}
+              onClick={() => handlePhotoClick(photo)}
+            >
+              <Image
+                src={photo.src.medium}
+                alt={photo.alt || 'Photo'}
+                loading='lazy'
+              />
+            </GridItem>
+          );
+        })}
+      </div>
+      {loading && <LoadingContainer>Loading more photos...</LoadingContainer>}
+      {!loading && !hasMore && photos.length > 0 && (
+        <LoadingContainer>No more photos to load</LoadingContainer>
       )}
-    </>
+    </GridContainer>
   );
 };
