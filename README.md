@@ -1,6 +1,6 @@
 # Photo Grid Gallery
 
-A responsive photo gallery built with React, featuring a beautiful masonry grid layout and real-time search functionality. The app uses the Pexels API to fetch high-quality photos and provides a seamless single-page application (SPA) experience.
+A responsive photo gallery featuring a beautiful masonry grid layout and real-time search functionality. The app uses the Pexels API to fetch high-quality photos and provides a seamless single-page application (SPA) experience.
 
 ## Features
 
