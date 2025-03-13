@@ -1,4 +1,5 @@
 import { useEffect, useState, RefObject } from 'react';
+import debounce from 'lodash/debounce';
 
 interface Dimensions {
   width: number;
@@ -14,24 +15,28 @@ export const useContainerDimensions = (
   });
 
   useEffect(() => {
-    if (!ref?.current) return;
+    if (!ref.current) return;
     const updateDimensions = () => {
-      console.log('updateDimensions');
       if (!ref.current) return;
+
       const rect = ref.current.getBoundingClientRect();
       if (rect.width > 0 && rect.height > 0) {
         setDimensions({ width: rect.width, height: rect.height });
       }
     };
-
+    const debouncedUpdateDimensions = debounce(updateDimensions, 100);
     const resizeObserver = new ResizeObserver(() => {
       updateDimensions();
     });
-
     resizeObserver.observe(ref.current);
+
+    // listen for window resize as a fallback
+    window.addEventListener('resize', debouncedUpdateDimensions);
 
     return () => {
       resizeObserver.disconnect();
+      window.removeEventListener('resize', debouncedUpdateDimensions);
+      debouncedUpdateDimensions.cancel();
     };
   }, [ref]);
 
