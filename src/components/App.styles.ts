@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 export const AppContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 `;
 
 export const SearchContainer = styled.div`
